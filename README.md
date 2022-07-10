@@ -1,0 +1,9 @@
+<h1 style="color: lightblue">versioninfo</h1>
+<body>
+    <h2 style="color: lightblue">
+    author: waifusempire
+    </h2>
+    <h2 style="color: lightblue">
+    version: 1.0.0
+    </h2>
+</body>
