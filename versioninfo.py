@@ -62,3 +62,4 @@ class VersionInfo:
             raise ValueError("'name' can't be an empty string")
         self.name = __name
         return self
+    
