@@ -11,7 +11,7 @@ from .versioninfo import VersionInfo, ReleaseLevel
 
 __version__ = "1.0.0"
 __author__ = "waifusempire"
-version_info = VersionInfo(1, 0, 0).set_name("versioninfo")
+version_info = VersionInfo("versioninfo", 1, 0, 0)
 
 
 __all__ = ["VersionInfo", "ReleaseLevel"]
