@@ -1,7 +1,7 @@
 """Version Info Helper
 
 Example:
->>> version_info = VersionInfo(1, 2, 3).set_name("str")
+>>> version_info = VersionInfo('str', 1, 2, 3)
 >>> print(version_info)
 <VersionInfo of 'str' major=1 minor=2 micro=3>"""
 
