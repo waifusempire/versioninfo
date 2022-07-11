@@ -50,27 +50,22 @@ class VersionInfo:
         return dict(name=self.name, major=self.major, minor=self.minor, micro=self.micro, releaselevel=self.releaselevel.value, serial=self.serial)
 
     def set_releaselevel(self, releaselevel: ReleaseLevel, serial: int = 0):
-        "Set a release level for the package/library/class"
+        "Set a release level for the package/library"
         if not isinstance(releaselevel, ReleaseLevel):
             raise TypeError(
                 f"'releaselevel' must be an instance of 'ReleaseLevel' not of '{type(releaselevel).__name__}'")
         if not isinstance(serial, int) and not isinstance(serial, type(None)):
             raise TypeError("'serial' may only be an int")
-        self.releaselevel = releaselevel
-        self.serial = serial
-        return self
-
-    def change_name(self, __name: str):
-        "Set the name of the package/library/class"
-        if not isinstance(__name, str):
-            raise TypeError("'name' may only be of type 'str'")
-        if __name == "":
-            raise ValueError("'name' can't be an empty string")
-        self.name = __name
+        if releaselevel == ReleaseLevel.final:
+            self.releaselevel = ReleaseLevel.final
+            self.serial = 0
+        else:    
+            self.releaselevel = releaselevel
+            self.serial = serial
         return self
 
     def to_ver_string(self):
-        "name==a.b.cXY"
+        "name==A.B.CXY"
         if self.releaselevel == ReleaseLevel.final:
             s = f"{self.name}=={self.major}.{self.minor}.{self.micro}"
         elif self.releaselevel == ReleaseLevel.beta:
@@ -82,7 +77,7 @@ class VersionInfo:
         return s
 
     def to_vstring(self):
-        "va.b.cXY"
+        "vA.B.CXY"
         s = f"v{self.major}.{self.minor}.{self.micro}"
         if self.releaselevel == ReleaseLevel.final:
             pass
