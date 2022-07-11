@@ -4,6 +4,6 @@
     author: waifusempire
     </h2>
     <h2 style="color: lightblue">
-    version: 1.0.0
+    version: 1.0.1
     </h2>
 </body>
