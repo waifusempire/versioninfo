@@ -9,9 +9,9 @@ Example:
 from .versioninfo import VersionInfo, ReleaseLevel
 
 
-__version__ = "1.0.1"
+__version__ = "2.0.0"
 __author__ = "waifusempire"
-version_info = VersionInfo("versioninfo", 1, 0, 1)
+version_info = VersionInfo("versioninfo", 2, 0, 0)
 
 
 __all__ = ["VersionInfo", "ReleaseLevel"]
