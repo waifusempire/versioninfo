@@ -1,6 +1,21 @@
-from dataclasses import dataclass, field
+from __future__ import annotations
+import attrs
 from enum import Enum
-from typing import Any
+from typing import Any, TypedDict
+
+
+class VersionInfoDict(TypedDict):
+    name: str
+    major: int
+    minor: int
+    micro: int
+    releaselevel: str
+    serial: int
+
+
+def handle_attr(__cls: VersionInfo, __attr: attrs.Attribute, __value: object):
+    raise attrs.exceptions.FrozenAttributeError(
+        f"Unable modify frozen attribute '{__attr.name}'")
 
 
 class ReleaseLevel(Enum):
@@ -10,37 +25,31 @@ class ReleaseLevel(Enum):
     release = "release"
 
 
-@dataclass(frozen=True, slots=True)
+@attrs.define(repr=False, slots=True, str=False, init=True)
 class VersionInfo:
-    name: str
-    major: int
-    minor: int = field(default=0)
-    micro: int = field(default=0)
-    releaselevel: ReleaseLevel = field(
-        default=ReleaseLevel.final)
-    serial: int = field(default=0)
+    name: str = attrs.field(converter=str, on_setattr=handle_attr, init=True)
+    major: int = attrs.field(converter=int, on_setattr=handle_attr, init=True)
+    minor: int = attrs.field(default=0, converter=int,
+                             on_setattr=handle_attr, init=True)
+    micro: int = attrs.field(default=0, converter=int,
+                             on_setattr=handle_attr, init=True)
+    releaselevel: ReleaseLevel = attrs.field(
+        default=ReleaseLevel.final, validator=attrs.validators.instance_of(ReleaseLevel), on_setattr=handle_attr, init=True)
+    serial: int = attrs.field(default=0, converter=int,
+                              on_setattr=handle_attr, init=True)
 
     def __repr__(self) -> str:
-        if self.releaselevel == ReleaseLevel.final:
-            return f"""<{self.__class__.__name__}{"" if not self.name else f" of '{self.name}'"} major={self.major}, minor={self.minor}, micro={self.micro}>"""
-        elif self.releaselevel == ReleaseLevel.beta:
-            if self.serial:
-                return f"""<{self.__class__.__name__}{"" if not self.name else f" of '{self.name}'"} major={self.major}, minor={self.minor}, micro={self.micro}, releaselevel=beta, serial={self.serial}>"""
-            else:
-                return f"""<{self.__class__.__name__}{"" if not self.name else f" of '{self.name}'"} major={self.major}, minor={self.minor}, micro={self.micro}, releaselevel=beta>"""
-        elif self.releaselevel == ReleaseLevel.alpha:
-            if self.serial:
-                return f"""<{self.__class__.__name__}{"" if not self.name else f" of '{self.name}'"} major={self.major}, minor={self.minor}, micro={self.micro}, releaselevel=alpha, serial={self.serial}>"""
-            else:
-                return f"""<{self.__class__.__name__}{"" if not self.name else f" of '{self.name}'"} major={self.major}, minor={self.minor}, micro={self.micro}, releaselevel=alpha>"""
-        elif self.releaselevel == ReleaseLevel.release:
-            if self.serial:
-                return f"""<{self.__class__.__name__}{"" if not self.name else f" of '{self.name}'"} major={self.major}, minor={self.minor}, micro={self.micro}, releaselevel=release, serial={self.serial}>"""
-            else:
-                return f"""<{self.__class__.__name__}{"" if not self.name else f" of '{self.name}'"} major={self.major}, minor={self.minor}, micro={self.micro}, releaselevel=release>"""
+        name = self.name
+        major = self.major
+        minor = self.minor
+        micro = self.micro
+        releaselevel = self.releaselevel
+        serial = self.serial
+        repr_str = f"VersionInfo({name=}, {major=}, {minor=}, {micro=}, releaselevel={str(releaselevel)}, {serial=})"
+        return repr_str
 
-    def to_dict(self) -> dict[str, Any]:
-        return dict(name=self.name, major=self.major, minor=self.minor, micro=self.micro, releaselevel=self.releaselevel.value, serial=self.serial)
+    def to_dict(self) -> VersionInfoDict:
+        return VersionInfoDict(name=self.name, major=self.major, minor=self.minor, micro=self.micro, releaselevel=self.releaselevel.value, serial=self.serial)
 
     def to_version_string(self):
         "name==A.B.CXY"
@@ -62,11 +71,14 @@ class VersionInfo:
         if self.releaselevel == ReleaseLevel.final:
             pass
         elif self.releaselevel == ReleaseLevel.release:
-            s+="rc{s}".format(s=self.serial)
+            s += "rc{s}".format(s=self.serial) if self.serial else "rc"
         elif self.releaselevel == ReleaseLevel.beta:
-            s+="b{s}".format(s=self.serial)
+            s += "b{s}".format(s=self.serial) if self.serial else "b"
         elif self.releaselevel == ReleaseLevel.alpha:
-            s+="a{s}".format(s=self.serial)
+            s += "a{s}".format(s=self.serial) if self.serial else "a"
         else:
             pass
         return s
+
+
+__all__ = ["ReleaseLevel", "VersionInfo"]
